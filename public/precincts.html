@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Precincts</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
+    <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+    <link href='https://fonts.googleapis.com/css?family=Revalia' rel='stylesheet'>    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="./img/lettre-d.svg">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    <div class="menu_gauche">
+        <div class="menu">
+            <a href="./accueil.html"><h1 class="titre">Denver Crimes Visualization</h1></a>
+            <ul>
+                <li><a href="./index.html"><button>Globale</button></a></li>
+                <li><a href="./quartiers.html"><button>Quartiers</button></a></li>
+                <li><a href="./districts.html"><button>Districts</button></a></li>
+                <li><a href="./precincts.html"><button class="current">Precincts</button></a></li>
+            </ul>
+        </div>
+        <div class="filtres">
+            <h3>Filtres : </h3>
+            <form id="myForm">
+                <label for="annee_precincts">Sélectionnez l'année :</label>
+                <select id="annee_precincts">
+                    <option value=""></option>
+                    <option value="toutes">2010 à 2021</option>
+                    <option value="2021">2021</option>
+                    <option value="2020">2020</option>
+                    <option value="2019">2019</option>
+                    <option value="2018">2018</option>
+                    <option value="2017">2017</option>
+                    <option value="2016">2016</option>
+                    <option value="2015">2015</option>
+                    <option value="2014">2014</option>
+                    <option value="2013">2013</option>
+                    <option value="2012">2012</option>
+                    <option value="2011">2011</option>
+                    <option value="2010">2010</option>
+                </select>
+                <label for="precinct">Sélectionnez le precinct :</label>
+                <select id="precinct">
+                    <option value=""></option>
+                    <option value="111">111</option>
+                    <option value="112">112</option>
+                    <option value="113">113</option>
+                    <option value="121">121</option>
+                    <option value="122">122</option>
+                    <option value="123">123</option>
+                    <option value="211">211</option>
+                    <option value="212">212</option>
+                    <option value="213">213</option>
+                    <option value="221">221</option>
+                    <option value="222">222</option>
+                    <option value="223">223</option>
+                    <option value="311">311</option>
+                    <option value="312">312</option>
+                    <option value="313">313</option>
+                    <option value="314">314</option>
+                    <option value="321">321</option>
+                    <option value="322">322</option>
+                    <option value="323">323</option>
+                    <option value="324">324</option>
+                    <option value="411">411</option>
+                    <option value="412">412</option>
+                    <option value="421">421</option>
+                    <option value="422">422</option>
+                    <option value="423">423</option>
+                    <option value="511">511</option>
+                    <option value="512">512</option>
+                    <option value="521">521</option>
+                    <option value="522">522</option>
+                    <option value="523">523</option>
+                    <option value="611">611</option>
+                    <option value="612">612</option>
+                    <option value="621">621</option>
+                    <option value="622">622</option>
+                    <option value="623">623</option>
+                    <option value="759">759</option>
+                    <option value="999">999</option>
+                </select>
+                <label for="category">Sélectionnez la catégorie : </label>
+                <select name="category" id="category">
+                    <option value="">toutes</option>
+                    <option value="public-disorder">public-disorder</option>
+                    <option value="drug-alcohol">drug-alcohol</option>
+                    <option value="sexual-assault">sexual-assault</option>
+                    <option value="other-crimes-against-persons">other-crimes-against-persons</option>
+                    <option value="all-other-crimes">all-other-crimes</option>
+                    <option value="murder">murder</option>
+                    <option value="robbery">robbery</option>
+                    <option value="aggravated-assault">aggravated-assault</option>
+                    <option value="arson">arson</option>
+                    <option value="burglary">burglary</option>
+                    <option value="larceny">larceny</option>
+                    <option value="theft-from-motor-vehicle">theft-from-motor-vehicle</option>
+                    <option value="auto-theft">auto-theft</option>
+                    <option value="white-collar-crime">white-collar-crime</option>
+                </select>
+                <button type="button" onclick="submitForm()">Valider</button>
+            </form>  
+        </div>
+    </div>
+    <div class="contenu">
+        <div class="un loader">
+            <img src="img/loader.gif" id="loading" alt="Chargement en cours..." style="display: none;">
+            <div id="leafletMap" class="leafletMap"></div>
+        </div>
+        <div class="deux loader">
+            <img src="img/loader.gif" id="loading2" alt="Chargement en cours..." style="display: none;">
+            <div id="heatMap" class="heatMap"></div>
+        </div>
+        <div class="trois loader graphique">
+            <h6 id="monTitre">Répartition des crimes par catégorie</h6>
+            <div class="canvas">
+                <canvas id="donutChart"></canvas>
+            </div>
+        </div>
+        <div class="quatre loader graphique">
+            <h6>Répartition du nombre de crimes par mois</h6>
+            <div class="canvas">
+                <canvas id="myChart" class="my_chart"></canvas>
+            </div>
+        </div>
+        <div id="cinq" class="cinq loader">
+            <div class="graphique">
+                <h6>nb. victimes moyen par incident</h6>
+                <h5 id="resultatRequete">0.00</h5>
+            </div>
+            <div class="graphique">
+                <h6>nb. total victimes</h6>
+                <h5 id="nombres2">0</h5>
+            </div>
+            <div class="graphique">
+                <h6>nb. total d'incidents</h6>
+                <h5 id="nombres3">0</h5>
+            </div>
+        </div>
+    </div>
+    <script src="precincts.js"></script>
+</body>
+</html>
