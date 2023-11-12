@@ -45,9 +45,8 @@ function tryDatabaseConnection() {
     if (err) {
       updateConnectionStatus('Erreur de connexion à la base de données : ' + err.message, 'red');
       console.error(connectionStatus);
-
       // Réessayer la connexion après 5 secondes
-      setTimeout(tryDatabaseConnection, 5000);
+      setTimeout(tryDatabaseConnection, 100);
     } else {
       updateConnectionStatus('Connecté à la base de données', 'green');
       console.log(connectionStatus);
